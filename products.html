@@ -8,24 +8,72 @@
 </head>
 
 <body>
-    <header>
+
+  <header>
+<!-- NAVIGATION BAR -->
     <nav>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="products.html">Products</a></li>
-      </ul>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="products.html">Products</a>
     </nav>
   </header>
 
-  <main>
+  <main class="products-section">
+  <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+      <h2>Categories</h2>
+      <ul>
+        <li>Scented Candles</li>
+        <li>Scented Body Butters</li>
+        <li>Scented Body Oils</li>
+        <li>Gift Sets</li>
+      </ul>
+    </aside>
+
     <section>
       <h1>Our Products</h1>
-      <p>Discover our range of premium scented products designed to enhance your daily life. From candles to room sprays, we offer a variety of high-quality items that bring joy and comfort to any space.</p>
+      <p>Discover our range of premium scented products designed to enhance your daily life. From candles to body oils, we offer a variety of high-quality items that bring joy and comfort.</p>
     </section>
+
+<!-- MAIN SHOP -->
+    <section class="shop-section">
+
+      <div class="shop">
+        <input type="text" placeholder="Search products..." id="search-bar">
+
+        <select name="sort" id="sort-filter">
+          <option value="default">Sort By Price</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+        </select>
+      </div>
+
+    </section>
+  
+
+
+<!-- CART ON THE RIGHT SIDE -->
+    <aside class="cart">
+      <h2>Your Cart</h2>
+      <div id="cart-items"></div>
+      <p>Your cart is currently empty.</p>
+
+      <h3>Checkout</h3>
+      <select name="payment-method" id="payment-method">
+        <option value="default">Select Payment Method</option>
+        <option value="mpesa">M-Pesa</option>
+        <option value="card">Credit Card/Debit Card</option>
+        <option value="pay-on-delivery">Pay on Delivery</option>
+      </select>
+
+      <button id="checkout-button">Checkout</button>
+      <p id="checkout-message"></p>
+
+    </aside>
+
   </main>
 
-  <footer></footer>
+  <footer>Simply Scents by CK</footer>
 
   <script src="script.js"></script>
 </body>
