@@ -392,16 +392,6 @@ footer {
   line-height: 1.5;
 }
 
-/* ABOUT PAGE */
-
-/* PRODUCTS PAGE */
-.sidebar {
-  width: 200px;
-  background-color: var(--secondary-color);
-  padding: 20px;
-  border: var(--border-color);
-}
-
 /* media design */
 @media (max-width: 768px) {
   .navigation-bar {
@@ -412,4 +402,25 @@ footer {
     width: 100%;
     margin-bottom: 20px;
   }
+}
+
+@media screen and (max-width: 480px) {
+  .products-main {
+    flex-direction: column;
+  }
+
+  .products-content {
+    flex-direction: column;
+  }
+
+  .shop {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .shop input[type="text"],
+  .shop select {
+    width: 100%;
+  }
+  
 }
