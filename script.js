@@ -1,18 +1,16 @@
 // products data
 const products = [
-  {
-    id: 1, name: "Illuminating Gift Set - Vanilla yum", price: 5500, image: "set1.jpg"
-  },
-  { id: 2, name: "Illuminating Gift Set - Citrus crazy", price: 5500, image: "set2.jpg" },
+  { id: 1, name: "Illuminating Gift Set - Vanilla yum", price: 5500 },
+  { id: 2, name: "Illuminating Gift Set - Citrus crazy", price: 5500 },
 
-  { id: 3, name: "Walking Bakery Body Butter", price: 2500, image: "butter1.jpg" },
-  {id: 4, name: "Lucky Lemon Body Butter", price: 2500, image: "butter2.jpg" },
+  { id: 3, name: "Walking Bakery Body Butter", price: 2500 },
+  { id: 4, name: "Lucky Lemon Body Butter", price: 2500 },
 
-  { id: 5, name: "Walking Bakery Body Oil", price: 2500, image: "oil1.jpg" },
-  { id: 6, name: "Lucky Lemon Body Oil", price: 2500, image: "oil2.jpg" },
+  { id: 5, name: "Walking Bakery Body Oil", price: 2500 },
+  { id: 6, name: "Lucky Lemon Body Oil", price: 2500 },
 
-  { id: 7, name: "Vanilla Yum Candle", price: 1500, image: "candle1.jpg" },
-  { id: 8, name: "Citrus Crazy Candle", price: 1500, image: "candle2.jpg" }
+  { id: 7, name: "Vanilla Yum Candle", price: 1500 },
+  { id: 8, name: "Citrus Crazy Candle", price: 1500 }
 ];
 
 // cart
@@ -38,6 +36,7 @@ function addToCart(productId) {
       cart.push({ ...product, quantity: 1 });
     }
     saveCart();
+    displayCart();
   }
 }
 
@@ -59,32 +58,87 @@ function displayProducts() {
   products.forEach(product => {
     const productCard = document.createElement('div');
     productCard.classList.add('product-card');
-
-function displayCart() {
-  const cartItemsContainer = document.getElementById('cart-items');
-  cartItemsContainer.innerHTML = '';
-  cart.forEach(item => {
-    const cartItem = document.createElement('div');
-    cartItem.classList.add('cart-item');
-    cartItem.innerHTML = `
-      <img src="${item.image}" alt="${item.name}">
-      <div>
-        <h4>${item.name}</h4>
-        <p>${formatPrice(item.price)}</p>
-        <input type="number" min="1" value="${item.quantity}" onchange="updateCartItemQuantity(${item.id}, this.value)">
-        <button onclick="removeFromCart(${item.id})">Remove</button>
-      </div>
-    `;
-    cartItemsContainer.appendChild(cartItem);
-  });
-}
     productCard.innerHTML = `
-      <img src="${product.image}" alt="${product.name}">
       <h3>${product.name}</h3>
       <p>${formatPrice(product.price)}</p>
       <button onclick="addToCart(${product.id})">Add to Cart</button>
     `;
     shopSection.appendChild(productCard);
+  });
+}
+
+function displayCart() {
+  const cartItemsContainer = document.getElementById('cart-items');
+  const emptyMessage = document.getElementById('empty-cart-message');
+  const cartTotal = document.getElementById('cart-total');
+  
+  cartItemsContainer.innerHTML = '';
+  
+  if (cart.length === 0) {
+    emptyMessage.style.display = 'block';
+    if (cartTotal) cartTotal.textContent = '0 KES';
+    return;
+  }
+  
+  emptyMessage.style.display = 'none';
+  
+  cart.forEach(item => {
+    const cartItem = document.createElement('div');
+    cartItem.classList.add('cart-item');
+    cartItem.innerHTML = `
+      <div class="cart-item-details">
+        <h4>${item.name}</h4>
+        <p class="cart-item-price">${formatPrice(item.price)}</p>
+        <div class="cart-item-controls">
+          <input type="number" min="1" value="${item.quantity}" onchange="updateCartItemQuantity(${item.id}, this.value); displayCart();">
+          <button onclick="removeFromCart(${item.id}); displayCart();">Remove</button>
+        </div>
+      </div>
+    `;
+    cartItemsContainer.appendChild(cartItem);
+  });
+  
+  const total = calculateTotal();
+  if (cartTotal) cartTotal.textContent = formatPrice(total);
+}
+
+// Initialize cart and products on page load
+if (document.querySelector('.shop-section')) {
+  displayProducts();
+  displayCart();
+}
+
+// Checkout functionality
+const checkoutButton = document.getElementById('checkout-button');
+if (checkoutButton) {
+  checkoutButton.addEventListener('click', () => {
+    const paymentMethod = document.getElementById('payment-method').value;
+    const checkoutMessage = document.getElementById('checkout-message');
+    
+    if (cart.length === 0) {
+      checkoutMessage.textContent = 'Your cart is empty. Add items before checking out.';
+      checkoutMessage.style.color = 'red';
+      return;
+    }
+    
+    if (paymentMethod === 'default') {
+      checkoutMessage.textContent = 'Please select a payment method.';
+      checkoutMessage.style.color = 'red';
+      return;
+    }
+    
+    const total = calculateTotal();
+    checkoutMessage.textContent = `Order confirmed! Total: ${formatPrice(total)}. Payment method: ${paymentMethod}`;
+    checkoutMessage.style.color = 'green';
+    
+    // Clear cart after successful checkout
+    setTimeout(() => {
+      cart = [];
+      saveCart();
+      displayCart();
+      document.getElementById('payment-method').value = 'default';
+      checkoutMessage.textContent = '';
+    }, 2000);
   });
 }
 
