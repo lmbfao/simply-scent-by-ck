@@ -1,20 +1,21 @@
 // products data
 const products = [
-  { id: 1, name: "Illuminating Gift Set - Vanilla yum", price: 5500 },
-  { id: 2, name: "Illuminating Gift Set - Citrus crazy", price: 5500 },
+  { id: 1, name: "Illuminating Gift Set - Vanilla yum", price: 5500, category: "Gift Sets" },
+  { id: 2, name: "Illuminating Gift Set - Citrus crazy", price: 5500, category: "Gift Sets" },
 
-  { id: 3, name: "Walking Bakery Body Butter", price: 2500 },
-  { id: 4, name: "Lucky Lemon Body Butter", price: 2500 },
+  { id: 3, name: "Walking Bakery Body Butter", price: 2500, category: "Scented Body Butters" },
+  { id: 4, name: "Lucky Lemon Body Butter", price: 2500, category: "Scented Body Butters" },
 
-  { id: 5, name: "Walking Bakery Body Oil", price: 2500 },
-  { id: 6, name: "Lucky Lemon Body Oil", price: 2500 },
+  { id: 5, name: "Walking Bakery Body Oil", price: 2500, category: "Scented Body Oils" },
+  { id: 6, name: "Lucky Lemon Body Oil", price: 2500, category: "Scented Body Oils" },
 
-  { id: 7, name: "Vanilla Yum Candle", price: 1500 },
-  { id: 8, name: "Citrus Crazy Candle", price: 1500 }
+  { id: 7, name: "Vanilla Yum Candle", price: 1500, category: "Scented Candles" },
+  { id: 8, name: "Citrus Crazy Candle", price: 1500, category: "Scented Candles" }
 ];
 
 // cart
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let selectedCategory = null;
 
 const generateUniqueId = () => {
   return '_' + Math.random().toString(36).substr(2, 9);
@@ -53,9 +54,16 @@ function updateCartItemQuantity(productId, quantity) {
   }
 }
 
-function displayProducts() {
-  const shopSection = document.querySelector('.shop-section');  
-  products.forEach(product => {
+function displayProducts(productsToDisplay = products) {
+  const shopSection = document.querySelector('.shop-section');
+  shopSection.innerHTML = '';
+  
+  if (productsToDisplay.length === 0) {
+    shopSection.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">No products found.</p>';
+    return;
+  }
+  
+  productsToDisplay.forEach(product => {
     const productCard = document.createElement('div');
     productCard.classList.add('product-card');
     productCard.innerHTML = `
@@ -106,6 +114,86 @@ function displayCart() {
 if (document.querySelector('.shop-section')) {
   displayProducts();
   displayCart();
+  
+  // Category functionality
+  const categoryItems = document.querySelectorAll('.sidebar ul li');
+  if (categoryItems.length > 0) {
+    categoryItems.forEach(item => {
+      item.style.cursor = 'pointer';
+      item.addEventListener('click', () => {
+        // Remove active class from all items
+        categoryItems.forEach(li => li.classList.remove('active'));
+        
+        // Add active class to clicked item
+        item.classList.add('active');
+        
+        // Set selected category
+        selectedCategory = item.textContent.trim();
+        
+        // Filter and display
+        filterAndDisplayProducts();
+      });
+    });
+    
+    // Add "Show All" option
+    const showAllItem = document.createElement('li');
+    showAllItem.textContent = 'Show All';
+    showAllItem.style.cursor = 'pointer';
+    showAllItem.style.fontWeight = 'bold';
+    showAllItem.style.marginTop = '10px';
+    showAllItem.classList.add('active');
+    showAllItem.addEventListener('click', () => {
+      categoryItems.forEach(li => li.classList.remove('active'));
+      showAllItem.classList.add('active');
+      selectedCategory = null;
+      filterAndDisplayProducts();
+    });
+    document.querySelector('.sidebar ul').appendChild(showAllItem);
+  }
+  
+  // Search functionality
+  const searchBar = document.getElementById('search-bar');
+  if (searchBar) {
+    searchBar.addEventListener('input', filterAndDisplayProducts);
+  }
+  
+  // Sort functionality
+  const sortFilter = document.getElementById('sort-filter');
+  if (sortFilter) {
+    sortFilter.addEventListener('change', filterAndDisplayProducts);
+  }
+}
+
+function filterAndDisplayProducts() {
+  const searchBar = document.getElementById('search-bar');
+  const sortFilter = document.getElementById('sort-filter');
+  
+  let filtered = products;
+  
+  // Apply category filter
+  if (selectedCategory) {
+    filtered = filtered.filter(product => product.category === selectedCategory);
+  }
+  
+  // Apply search filter
+  if (searchBar && searchBar.value.trim() !== '') {
+    const searchTerm = searchBar.value.toLowerCase();
+    filtered = filtered.filter(product => 
+      product.name.toLowerCase().includes(searchTerm)
+    );
+  }
+  
+  // Apply sort
+  if (sortFilter && sortFilter.value !== 'default') {
+    filtered = [...filtered]; // Create a copy to avoid mutating original
+    if (sortFilter.value === 'price-low') {
+      filtered.sort((a, b) => a.price - b.price);
+    } else if (sortFilter.value === 'price-high') {
+      filtered.sort((a, b) => b.price - a.price);
+    }
+  }
+  
+  displayProducts(filtered);
 }
 
 // Checkout functionality

@@ -143,6 +143,11 @@ footer {
   color: var(--accent-color);
 }
 
+.sidebar li.active {
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
 .products-center {
   flex: 1;
 }
